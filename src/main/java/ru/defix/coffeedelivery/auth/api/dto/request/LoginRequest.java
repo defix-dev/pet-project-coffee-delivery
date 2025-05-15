@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequest {
     @NotEmpty
     private String username;

@@ -1,4 +1,6 @@
 package ru.defix.coffeedelivery.review.api.dto.request;
 
-public record ReviewCreateData(int productId, String text) {
+import jakarta.validation.constraints.NotNull;
+
+public record ReviewCreateData(@NotNull Integer productId, @NotNull String text) {
 }

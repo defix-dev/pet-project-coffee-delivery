@@ -1,5 +1,7 @@
 package ru.defix.coffeedelivery.auth.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.defix.coffeedelivery.auth.filter.JwtAccessAuthenticationFilter;
 import ru.defix.coffeedelivery.auth.filter.JwtRefreshAuthenticationFilter;
@@ -25,10 +27,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebMvc
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
+    private final HandlerExceptionResolver exceptionResolver;
 
     @Autowired
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService,
+                          @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
         this.userDetailsService = userDetailsService;
+        this.exceptionResolver = exceptionResolver;
     }
 
     @Bean
@@ -51,7 +56,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtRefreshAuthenticationFilter jwtRefreshAuthenticationFilter() {
-        return new JwtRefreshAuthenticationFilter(userDetailsService);
+        return new JwtRefreshAuthenticationFilter(userDetailsService, exceptionResolver);
     }
 
     @Bean

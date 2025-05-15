@@ -1,7 +1,9 @@
 package ru.defix.coffeedelivery.review.api.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.defix.coffeedelivery.auth.service.dto.SimpleUserDetails;
@@ -30,7 +32,7 @@ public class ReviewControllerV1 {
     }
 
     @PostMapping
-    public ResponseEntity<?> createReview(@RequestBody ReviewCreateData data,
+    public ResponseEntity<?> createReview(@Valid @RequestBody ReviewCreateData data,
                                           @AuthenticationPrincipal SimpleUserDetails userDetails) {
         facade.createReview(data, userDetails.getId());
         return ResponseEntity.noContent().build();

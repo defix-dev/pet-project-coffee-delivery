@@ -5,6 +5,7 @@ import ru.defix.coffeedelivery.auth.api.dto.request.RefreshTokenRequest;
 import ru.defix.coffeedelivery.auth.api.dto.request.RegisterRequest;
 import ru.defix.coffeedelivery.auth.api.dto.response.JwtPairResponse;
 import ru.defix.coffeedelivery.auth.service.AuthService;
+import ru.defix.coffeedelivery.auth.service.dto.SimpleUserDetails;
 import ru.defix.coffeedelivery.auth.service.jwt.JwtConstants;
 import ru.defix.coffeedelivery.auth.service.jwt.JwtUtils;
 import ru.defix.coffeedelivery.user.service.UserService;
@@ -37,12 +38,13 @@ public class AuthControllerV1 {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
         userService.save(new UserSaveParams(
                 registerRequest.getUsername(),
                 registerRequest.getPassword(),
                 registerRequest.getEmail()
         ));
+
         return ResponseEntity.noContent().build();
     }
 
@@ -57,14 +59,14 @@ public class AuthControllerV1 {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletResponse response) {
         response.addCookie(createTokenCookie(JwtConstants.ACCESS_TOKEN_COOKIE_NAME, "", Duration.ofSeconds(0)));
         response.addCookie(createTokenCookie(JwtConstants.REFRESH_TOKEN_COOKIE_NAME, "", Duration.ofSeconds(0)));
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/jwt/refresh-json")
-    public ResponseEntity<JwtPairResponse> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<JwtPairResponse> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest, @AuthenticationPrincipal SimpleUserDetails userDetails) {
         String accessToken = JwtUtils.refreshAccessToken(refreshTokenRequest.refreshToken(), userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         return ResponseEntity.ok(
                 new JwtPairResponse(accessToken, refreshTokenRequest.refreshToken())
@@ -72,13 +74,13 @@ public class AuthControllerV1 {
     }
 
     @PostMapping("/jwt/refresh-cookie")
-    public ResponseEntity<Void> refreshAccessToken(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetails userDetails) {
-        Optional<Cookie> refreshTokenCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(JwtConstants.REFRESH_TOKEN_COOKIE_NAME))
-                .findFirst();
+    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal SimpleUserDetails userDetails) {
+        Cookie refreshTokenCookie = Optional.ofNullable(request.getCookies())
+                .flatMap(cookies -> Arrays.stream(cookies)
+                        .filter(cookie -> cookie.getName().equals(JwtConstants.REFRESH_TOKEN_COOKIE_NAME))
+                        .findFirst()).orElseThrow(() -> new IllegalArgumentException("Cookie not found"));
 
-        if(refreshTokenCookie.isEmpty()) throw new IllegalArgumentException("Cookie not found");
-
-        String accessToken = JwtUtils.refreshAccessToken(refreshTokenCookie.get().getValue(), userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+        String accessToken = JwtUtils.refreshAccessToken(refreshTokenCookie.getValue(), userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         response.addCookie(createTokenCookie(JwtConstants.ACCESS_TOKEN_COOKIE_NAME, accessToken, JwtConstants.ACCESS_TOKEN_TTL));
 
         return ResponseEntity.noContent().build();
