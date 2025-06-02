@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -13,12 +14,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.defix.coffeedelivery.auth.api.controller.AuthControllerV1;
 import ru.defix.coffeedelivery.auth.api.dto.request.LoginRequest;
 import ru.defix.coffeedelivery.auth.api.dto.request.RefreshTokenRequest;
 import ru.defix.coffeedelivery.auth.api.dto.request.RegisterRequest;
 import ru.defix.coffeedelivery.auth.api.dto.response.JwtPairResponse;
+import ru.defix.coffeedelivery.auth.filter.JwtAccessAuthenticationFilter;
 import ru.defix.coffeedelivery.auth.filter.JwtRefreshAuthenticationFilter;
 import ru.defix.coffeedelivery.auth.service.AuthService;
 import ru.defix.coffeedelivery.auth.service.jwt.JwtConstants;
@@ -36,8 +40,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(AuthControllerV1.class)
+@AutoConfigureMockMvc(addFilters = false)
 @ControllerTests
 public class AuthControllerTests {
 
@@ -52,9 +56,6 @@ public class AuthControllerTests {
 
     @Nested
     public class SuccessTests {
-        @MockitoBean
-        private JwtRefreshAuthenticationFilter jwtRefreshAuthenticationFilter;
-
         @Test
         public void registerTest() throws Exception {
             UserSaveParams saveParams = new UserSaveParams(
@@ -105,7 +106,7 @@ public class AuthControllerTests {
                 RefreshTokenRequest request = new RefreshTokenRequest("refreshToken");
                 JwtPairResponse jwtPair = new JwtPairResponse("accessToken", "refreshToken");
                 jwtUtilsMock.when(() -> JwtUtils.refreshAccessToken(anyString(), anyList())).thenReturn(
-                        request.refreshToken()
+                        "accessToken"
                 );
 
                 mockMvc.perform(post("/api/v1/auth/jwt/refresh-json")

@@ -5,14 +5,20 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.defix.coffeedelivery.auth.config.SecurityConfig;
 import ru.defix.coffeedelivery.auth.service.dto.SimpleUserDetails;
+import ru.defix.coffeedelivery.basket.api.controller.BasketControllerV1;
+import ru.defix.coffeedelivery.config.TestSecurityConfig;
+import ru.defix.coffeedelivery.review.api.controller.ReviewControllerV1;
 import ru.defix.coffeedelivery.review.api.dto.request.ReviewCreateData;
 import ru.defix.coffeedelivery.review.api.dto.response.ReviewData;
 import ru.defix.coffeedelivery.review.api.dto.response.SenderData;
@@ -29,8 +35,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(ReviewControllerV1.class)
+@Import({TestSecurityConfig.class, SecurityConfig.class})
 @ControllerTests
 public class ReviewControllerTests {
     @Autowired

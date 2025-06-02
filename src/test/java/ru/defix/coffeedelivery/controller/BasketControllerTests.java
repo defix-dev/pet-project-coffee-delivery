@@ -5,17 +5,24 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.defix.coffeedelivery.auth.config.JwtConfig;
+import ru.defix.coffeedelivery.auth.config.SecurityConfig;
+import ru.defix.coffeedelivery.auth.service.UserDetailsServiceImpl;
 import ru.defix.coffeedelivery.auth.service.dto.SimpleUserDetails;
+import ru.defix.coffeedelivery.basket.api.controller.BasketControllerV1;
 import ru.defix.coffeedelivery.basket.api.dto.response.BasketPersonalData;
 import ru.defix.coffeedelivery.basket.api.dto.response.ProductPersonalData;
 import ru.defix.coffeedelivery.basket.service.BasketService;
 import ru.defix.coffeedelivery.basket.service.dto.BasketCreaseParams;
+import ru.defix.coffeedelivery.config.TestSecurityConfig;
 import ru.defix.coffeedelivery.db.entity.Basket;
 import ru.defix.coffeedelivery.db.entity.Product;
 import ru.defix.coffeedelivery.db.entity.User;
@@ -32,8 +39,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(BasketControllerV1.class)
+@Import({TestSecurityConfig.class, SecurityConfig.class})
 @ControllerTests
 public class BasketControllerTests {
 

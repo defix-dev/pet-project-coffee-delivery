@@ -3,6 +3,7 @@ package ru.defix.coffeedelivery.auth.filter;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import ru.defix.coffeedelivery.auth.service.UserDetailsServiceImpl;
 import ru.defix.coffeedelivery.auth.service.dto.SimpleUserDetails;
@@ -49,7 +50,7 @@ public class JwtRefreshAuthenticationFilter extends OncePerRequestFilter {
             changeAuthenticationByRefreshToken(refreshToken);
             filterChain.doFilter(requestWrapper, response);
         } catch (Exception e) {
-            exceptionResolver.resolveException(request, response, null, e);
+            exceptionResolver.resolveException(request, response, null, new InsufficientAuthenticationException("PIZDA"));
         }
     }
 

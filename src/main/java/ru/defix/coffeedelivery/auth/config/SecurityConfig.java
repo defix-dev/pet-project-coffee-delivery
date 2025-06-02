@@ -26,14 +26,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 @EnableWebMvc
 public class SecurityConfig {
-    private final UserDetailsServiceImpl userDetailsService;
-    private final HandlerExceptionResolver exceptionResolver;
+    private final JwtRefreshAuthenticationFilter refreshAuthenticationFilter;
+    private final JwtAccessAuthenticationFilter accessAuthenticationFilter;
 
     @Autowired
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService,
-                          @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
-        this.userDetailsService = userDetailsService;
-        this.exceptionResolver = exceptionResolver;
+    public SecurityConfig(JwtRefreshAuthenticationFilter refreshAuthenticationFilter,
+                          JwtAccessAuthenticationFilter accessAuthenticationFilter) {
+        this.refreshAuthenticationFilter = refreshAuthenticationFilter;
+        this.accessAuthenticationFilter = accessAuthenticationFilter;
     }
 
     @Bean
@@ -44,19 +44,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**", "/error", "/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
                         .anyRequest().authenticated()
-                ).addFilterBefore(jwtRefreshAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAccessAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                ).addFilterBefore(refreshAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(accessAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
-
-    @Bean
-    public JwtAccessAuthenticationFilter jwtAccessAuthenticationFilter() throws Exception {
-        return new JwtAccessAuthenticationFilter(userDetailsService);
-    }
-
-    @Bean
-    public JwtRefreshAuthenticationFilter jwtRefreshAuthenticationFilter() {
-        return new JwtRefreshAuthenticationFilter(userDetailsService, exceptionResolver);
     }
 
     @Bean
