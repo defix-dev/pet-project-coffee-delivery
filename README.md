@@ -41,6 +41,16 @@ docker compose up
 
 App runs on: **[http://localhost:8080](http://localhost:8080)**
 
+## Testing
+
+To run the tests, use the following command:
+
+```bash
+mvn clean test
+```
+
+This will execute all the tests in the project.
+
 ## License
 
 No license.
