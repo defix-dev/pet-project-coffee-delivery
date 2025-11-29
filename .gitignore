@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Common ###
+cd_docker/.env
