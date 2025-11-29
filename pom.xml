@@ -10,9 +10,9 @@
     </parent>
     <groupId>com.defix</groupId>
     <artifactId>coffee-delivery</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>coffee-delivery</name>
-    <description>Demo project for Spring Boot</description>
+    <version>build</version>
+    <name>Coffee Delivery</name>
+    <description>No description</description>
     <url/>
     <licenses>
         <license/>
@@ -141,31 +141,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>
-                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
-                        -Xshare:off
-                    </argLine>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>9.22.3</version>
-                <configuration>
-                    <url>jdbc:postgresql://localhost:5432/coffee-delivery</url>
-                    <user>postgres</user>
-                    <password>root</password>
-                    <schemas>public</schemas>
-                    <locations>
-                        <location>filesystem:src/main/resources/db/migration</location>
-                    </locations>
-                    <baselineOnMigrate>true</baselineOnMigrate>
-                </configuration>
             </plugin>
         </plugins>
     </build>

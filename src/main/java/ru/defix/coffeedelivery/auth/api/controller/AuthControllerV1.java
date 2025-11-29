@@ -28,7 +28,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthControllerV1 {
-    private final UserService userService;
+private final UserService userService;
     private final AuthService authService;
 
     @Autowired
